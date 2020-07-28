@@ -1,0 +1,363 @@
+{% load static %}
+
+{% include 'inc/head.inc.html' %}
+{% include 'inc/navbar.inc.html' %}
+
+<body>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 justify-content-center py-2">
+
+                <div class="row">
+                    {% if not request.GET.type %}
+                    <div class="col-sm-6 py-3">
+                        <a href="show?type=permanent">
+                            <button type="button" name="" id="" class="btn btn-outline-info btn-block">Permanent sites</button>
+
+                        </a>
+
+                    </div>
+
+                    <div class="col-sm-6 py-3">
+                        <a href="show?type=temporary">
+
+                            <button type="button" name="" id="" class="btn btn-outline-info btn-block">Temporary sites</button>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% ifequal request.GET.type 'permanent' %}
+                    <div class="col-sm-6 py-3">
+                        <a href="show?type=permanent">
+                            <button type="button" name="" id="" class="btn btn-info btn-block">Permanent sites</button>
+
+                        </a>
+
+                    </div>
+
+                    <div class="col-sm-6 py-3">
+                        <a href="show?type=temporary">
+
+                            <button type="button" name="" id="" class="btn btn-outline-info btn-block">Temporary sites</button>
+                        </a>
+                    </div>
+
+
+
+                    {% endifequal %}
+
+                    {% ifequal request.GET.type 'temporary' %}
+                    <div class="col-sm-6 py-3">
+                        <a href="show?type=permanent">
+                            <button type="button" name="" id="" class="btn btn-outline-info btn-block">Permanent sites</button>
+
+                        </a>
+
+                    </div>
+
+                    <div class="col-sm-6 py-3">
+                        <a href="show?type=temporary">
+
+                            <button type="button" name="" id="" class="btn btn-info btn-block">Temporary sites</button>
+                        </a>
+                    </div>
+
+
+                    {% endifequal %}
+                </div>
+                <div id='map' style='width: 100%; height: 700px; border-radius: 10px; cursor: pointer; border: solid 2px grey;'></div>
+    
+            </div>
+
+
+            <div class="col-sm-4 py-3">
+                <!-- <div class="bg-info text-white p-3  mb-3" style="border-radius: 5px;">
+                    <h5 class="m-0">All {{request.GET.type}} places</h5>
+                </div>   -->
+                
+               
+                <div class="p-3 text-dark" id="main_holder" style="opacity: 0; border: solid 1px #cccccc; border-radius: 10px;">
+             
+
+                
+                    <img src="" alt="" id="image_holder" class="my-3" style="width: 100%; height:250px; border-radius: 5px;">
+                
+                
+                    <h3 class="my-2" id="name_holder"></h3>
+                    <p class="text-secondary" id="desc_holder">
+                        
+                    </p>
+                    <div style="display: inline;" class="ratingParent my-2" id="single_rating">
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+
+                    </div>
+                    <span style="opacity: 0;" id="rating_holder"></span>
+
+                    <div class="my-2">
+                        <h5 class="text-info">Added by <span class="text-secondary" id="added_by_holder"></span></h5>
+                    </div>
+
+                    <hr>
+
+                    <div id="dates_con" style="display: none;">
+                        <div class="my-2">
+                            <h6 class="text-info">Start &nbsp;<span class="text-secondary" id="start_date"></span></h6>
+                        </div>
+    
+                        <div class="my-2">
+                            <h6 class="text-info">End &nbsp;&nbsp; <span class="text-secondary" id="end_date"></span></h6>
+                        </div>
+
+                    </div>
+                    
+
+
+                    <a href="" id="link_holder">
+                        <button type="button" class="btn btn-info btn-block mt-3">More info</button>
+
+                    </a>
+                    
+                    
+                </div>
+            
+            </div>
+    
+        </div>
+    </div>
+    
+    
+    <script>
+        var map_container = []
+
+
+        var extra_storage = {}
+
+
+        var geojson = {
+            type: 'FeatureCollection',
+            features: [
+                
+              ]
+            };
+
+
+        {% for place in all_places %}
+
+       
+
+            geojson.features.push(
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [parseFloat('{{place.place_longitude}}'), parseFloat('{{place.place_latitude}}')]
+                    },
+                    properties: {
+                        id: '{{place.id}}',
+                        title: '{{place.place_name}}',
+                        description: '{{place.place_description}}'
+                    }
+                }
+
+            )
+
+            extra_storage['{{place.id}}'] = {
+                name: '{{place.place_name}}',
+                desc: '{{place.place_description}}',
+                image: 'media/{{place.place_image}}',
+                ratings: '{{place.place_ratings}}',
+                added_by: '{{place.added_by.first_name}} {{place.added_by.last_name}}',
+                start: '{{place.start_date_time}}',
+                end: '{{place.end_date_time}}',
+                type: '{{place.place_type}}'
+            }
+
+        
+
+        {% endfor %}
+
+        console.log(geojson.features);
+
+        console.log(extra_storage);
+
+        // console.log(geojson.features)
+
+
+
+
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFhemhhc3NhbiIsImEiOiJja2QybmJkOTkxZmQwMnhxeWQ3bTRseTUwIn0.O635_fQIQv7h--atZBrb_g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
+            // style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-111.0937311, 39.3209801], // starting position
+            zoom: 5 // starting zoom
+        });
+
+        map.addControl(new mapboxgl.NavigationControl());
+
+
+
+        geojson.features.forEach(function(marker) {
+
+            // create a HTML element for each feature
+            var el = document.createElement('div');
+            el.className = 'marker';
+
+            console.log("INSIDE WORKING AREA")
+            $(el).attr('id', marker.properties.id)
+
+            // make a marker for each feature and add to the map
+            new mapboxgl.Marker(el)
+            .setLngLat(marker.geometry.coordinates)
+            .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+                .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
+            .addTo(map);
+        });
+
+
+        $(".marker").on('click', (event)=>{
+             
+            targetted_data = extra_storage[event.target.id]
+            console.log(targetted_data);
+
+            $("#main_holder").css('opacity', '1');
+
+            $("#name_holder").text(targetted_data.name);
+            $("#desc_holder").text(targetted_data.desc);
+            $("#image_holder").attr('src', targetted_data.image);
+            $("#rating_holder").text(targetted_data.ratings);
+            console.log(targetted_data.ratings);
+            $("#added_by_holder").text(targetted_data.added_by);
+            $("#link_holder").attr('href', `place/${event.target.id}`);
+
+            if (targetted_data.type=='temporary') {
+                $("#dates_con").css('display', 'block');
+                $("#start_date").text(targetted_data.start);
+                $("#end_date").text(targetted_data.end);
+            }else{
+                $("#dates_con").css('display', 'none');
+            }
+
+
+
+            $(document).ready(function(){
+                    let all_stars_number = parseInt($("#rating_holder").text());
+                    let current_parent = $("#single_rating");
+
+                    let all_children = current_parent.children()
+
+                    console.log(all_children);
+
+                    for (let j = 0; j < all_stars_number; j++) {
+                        let single_star = all_children[j];
+
+                        single_star.classList.remove("text-secondary");
+                        single_star.classList.add("text-warning");
+                    
+                    }
+
+                    
+
+    
+                    
+                });
+            // window.location.href = `show?place=${event.target.id}`
+            // console.log(this.properties.title)
+        });
+
+
+
+        // new mapboxgl.Marker(el)
+        // .setLngLat(marker.geometry.coordinates)
+        // .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+        //     .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
+        // .addTo(map);
+
+
+
+
+
+
+
+
+
+
+
+
+        // custom JS
+
+        function upload_img() {
+            $("#pic").click();
+        }
+
+        function readURL(input) {
+                nameFile = input.files[0].name.split(".");
+                nameFile = nameFile[nameFile.length-1];
+                console.log(nameFile);
+                if(nameFile=="jpg" || nameFile=="jpeg" || nameFile=="png"){
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+            
+                        reader.onload = function (e) {
+                            $('#blah')
+                                .attr('src', e.target.result)
+                                .width('100%')
+                                .height(300);
+                        };
+
+                        reader.readAsDataURL(input.files[0]);
+
+
+                    }
+                }else{
+                    $("#mainDiv").load(location.href + " #mainDiv>*", "");
+                    alert("Invalid file type!");
+                }
+
+
+                
+            }
+
+
+        $("#lc_type").on('change', (e)=>{
+            var thisValue = $('#lc_type').val();
+
+            if (thisValue == "temporary") {
+                console.log("oh temp");
+                $("#end_date_container").collapse('show');
+            }else if(thisValue == "permanent"){
+                console.log("oh perm");
+                $("#end_date_container").collapse('hide');
+
+
+            }
+        })
+
+
+
+        $("#myForm").submit(()=>{
+            if ($("#lc_type").val()=="temporary" && $("#lc_end_date").val()=="") {
+                $("#lc_end_date_error").text("Please! select end date & time");
+                return false;
+            }else{
+                $("#lc_end_date_error").text("");
+                return false;
+
+            }
+
+
+        })
+
+
+
+
+    </script>
+</body>
+</html>

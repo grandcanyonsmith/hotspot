@@ -1,0 +1,35 @@
+{% include 'inc/head.inc.html' %}
+
+{% include 'inc/navbar.inc.html' %}
+
+<body style="background-color: #ffffff;">
+    <div class="row" style="width: 100%;">
+        <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 90vh">
+            <div class="my-form">
+                <h3 class="text-info">Login here!</h3>
+                <form autocomplete="off" style="text-align:center; margin-top: 30px;" action="login" method="POST">
+                    {% csrf_token %}
+                    <!-- <i class="material-icons pro">account_circle</i> -->
+                    <input class="field form-control" id="email" name="email" type="email" placeholder="Email" required>
+                    <input class="field form-control" id="passowrd" name="password" type="password" placeholder="Password" required>
+                    <p id="error" 
+                        style="
+                            text-align: left; 
+                            transition-duration:0.25s;
+                            color:#ed4337;"
+                        >
+                        {% for message in messages %}
+                            {{message}}
+                        {% endfor %}
+                    </p>
+                    <button class="btn btn-block btn-info" type="submit">NEXT</button>        
+                    <p class="my-4">Never registered before?</p>
+                    <a href="{% url 'signup' %}"><button class="btn btn-block btn-secondary" type="button">SIGNUP</button></a>
+                </form>
+
+            </div>
+        </div>
+    </div>    
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+{% load static %}
+
+{% include 'inc/head.inc.html' %}
+{% include 'inc/navbar.inc.html' %}
+
+
+<body>
+    <div class="container">
+        <br>
+        <br>
+        <div class="row">
+
+            {% for place in all_places %}
+            <div class="col-sm-4 my-3">
+                <div class="p-3 text-dark" style="border: solid 1px #cccccc; border-radius: 10px;">
+                    {% ifequal place.place_type 'permanent' %}
+                        <span class="badge badge-success">Permanent</span>
+                    {% else %}
+                        <span class="badge badge-secondary">temporary</span>
+
+                    {% endifequal %}
+
+                 
+                    <img src="media/{{place.place_image}}" alt="" class="my-3" style="width: 100%; height:250px; border-radius: 5px;">
+                  
+                    <a href="place/{{place.id}}" style="text-decoration: none;" class="text-dark">
+                        <h3 class="my-2">{{place.place_name}}</h3>
+
+                    </a>
+                    <p class="text-secondary">
+                        {{place.place_description}}
+                    </p>
+                    <div style="display: inline;" class="ratingParent my-2" >
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                        <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+
+                    </div>
+                    <span class="ratingNumber" style="opacity: 0;">{{place.place_ratings}}</span>
+                    <div>
+                        {% ifequal place.place_type 'temporary' %}
+                            <a href="removePlace/{{place.id}}" onclick="return confirm('Are you sure, you want to delete this place?')">
+                                <button type="button" class="btn btn-info my-2">Remove</button>
+                            </a>
+
+                        {% endifequal %}
+                    </div>
+                    
+                </div>
+            </div>
+
+            {% endfor %}
+
+            <script>
+                $(document).ready(function(){
+                    let all_stars_number = $(".ratingNumber");
+                    let parent_ratings = $(".ratingParent");
+
+
+                    
+                    for(let i=0; i < all_stars_number.length; i++){
+                        let rating_number = parseInt(all_stars_number[i].innerText);
+
+                        console.log(rating_number)
+
+                        let current_parent = parent_ratings[i];
+
+                        let all_children = current_parent.children
+
+                        for (let j = 0; j < rating_number; j++) {
+                        const single_star = all_children[j];
+
+                        single_star.classList.remove("text-secondary");
+                        single_star.classList.add("text-warning");
+                        
+                        }
+
+                    
+
+    
+                    }
+                });
+
+            </script>
+            
+
+            {% if not all_places %}
+
+                <div class="col-sm-12 my-3">
+                    <br>
+                    <h2 class="text-secondary">You have not added any place yet!</h2>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+    
+    
+</body>
+
+
+
+
+
+</html>

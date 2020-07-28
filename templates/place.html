@@ -1,0 +1,88 @@
+{% load static %}
+
+{% include 'inc/head.inc.html' %}
+{% include 'inc/navbar.inc.html' %}
+
+<body>
+    <br>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-sm-8">
+
+                <div class="p-3" style="border: solid 1px #cccccc; border-radius: 10px;">
+                    <div class="row">
+                        <div class="col-sm-5 py-2">
+                            <img src="media/{{place.place_image}}" style="width: 100%; height:220px; border-radius: 7px;" alt="">
+                            
+
+                            
+                        
+                        </div>
+
+                        <div class="col-sm-7 p-2">
+                            <h3 class="text-dark my-2">{{place.place_name}}</h3>
+                            <p class="my-2" style="font-size:20px">{{place.place_description}}</p>
+
+                            <div style="display: inline;" class="ratingParent my-2" id="single_rating">
+                                <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                                <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                                <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                                <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+                                <i class="material-icons text-secondary" style="margin-right: -7px;">star</i>
+        
+                            </div>
+                            <span style="opacity: 0;" id="rating_holder">{{place.place_ratings}}</span>
+                            <div class="my-2">
+                                <h5 class="text-info">Added by <span class="text-secondary">{{place.added_by.first_name}} {{place.added_by.last_name}}</span></h5>
+                            </div>
+                            <hr>
+                            {% ifequal place.place_type 'temporary' %}
+                            <div>
+                                <div class="my-2">
+                                    <h6 class="text-info">Start &nbsp;<span class="text-secondary" id="start_date">{{place.start_date_time}}</span></h6>
+                                </div>
+            
+                                <div class="my-2">
+                                    <h6 class="text-info">End &nbsp;&nbsp; <span class="text-secondary" id="end_date">{{place.end_date_time}}</span></h6>
+                                </div>
+        
+                            </div>
+                            {% endifequal %}
+                        </div>
+
+                        <script>
+                            $(document).ready(function(){
+                                let all_stars_number = parseInt($("#rating_holder").text());
+                                let current_parent = $("#single_rating");
+
+                                let all_children = current_parent.children()
+
+                                console.log(all_children);
+
+                                for (let j = 0; j < all_stars_number; j++) {
+                                    let single_star = all_children[j];
+
+                                    single_star.classList.remove("text-secondary");
+                                    single_star.classList.add("text-warning");
+                                
+                                }
+                                
+                            });
+                        </script>
+
+                        
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-sm-4">
+
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

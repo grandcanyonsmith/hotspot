@@ -1,0 +1,256 @@
+{% load static %}
+
+{% include 'inc/head.inc.html' %}
+{% include 'inc/navbar.inc.html' %}
+
+<body>
+    <br>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 d-flex justify-content-center py-2">
+                <div id='map' style='width: 100%; height: 700px; border-radius: 10px; cursor: pointer; border: solid 2px grey;'></div>
+    
+            </div>
+    
+            <div class="col-sm-4 py-2">
+                <div class="bg-info text-white p-3  mb-3" style="border-radius: 5px;">
+                    <h5 class="m-0">Add {{request.GET.type}} place</h5>
+                </div>  
+                <form action="" method="post" id="myForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="p-0 my-3" style="margin:auto; text-align:center">
+                        <div>
+                            <img id="blah" src="{% static 'img/white.jpg' %}" style="margin:auto; border-radius: 10px;" alt="Card image">
+                        </div>
+
+
+                    
+                        <div style="height:0px; overflow:hidden">
+                            <input type="file" id="pic" onchange="readURL(this);" name="image" required>
+
+                        </div>
+
+                        <img src="{% static 'img/upload_icon.png' %}" class="mt-3" style="width: 35px; height:35px; margin:auto; cursor: pointer;" onclick="upload_img();" alt="">
+
+                        <!-- <button type="button" class="form-control btn btn-outline-secondary" onclick="upload_img();">Choose profile img</button> -->
+
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Location name" name="lc_name" id="lc_name" required>
+
+                    </div>
+                    <div class="form-group">
+                        
+                        <textarea class="form-control" name="lc_details" id="lc_details" style="height: 70px;" cols="30" rows="10" placeholder="Location details" required></textarea>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Longitude" name="longitude" id="longitude" readonly required>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Latitude" name="latitude" id="latitude" readonly required>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <select class="form-control" name="lc_rating" id="lc_rating" required>
+                        <option value="">Select rating stars</option>
+                        <option value="5">5 - Amazing</option>
+                        <option value="4">4 - Better</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - poor</option>
+                        <option value="1">1 - Worst</option>
+                      </select>
+                    </div>
+
+                    <input type="hidden" name="lc_type" id="lc_type" value="{{request.GET.type}}" required>
+                    <p class="text-danger" id="type_error"></p>
+
+                    <div class="form-group collapse" id="end_date_container">
+                        <h5 class="text-info my-3">Enter start date & time</h5>
+                        <input class="form-control my-3" type="datetime-local" name="lc_start_date" id="lc_start_date">
+                        <h5 class="text-info my-3">Enter end date & time</h5>
+                        <input class="form-control my-3" type="datetime-local" name="lc_end_date" id="lc_end_date">
+                        <p class="text-danger" id="lc_end_date_error"></p>
+
+                    </div>
+
+                    <div class="form-group">
+                      <button type="submit" name="" id="" class="btn btn-info btn-block">Submit details</button>
+                    </div>
+
+
+                </form>
+                <div id="info"></div>
+
+    
+            </div>
+    
+        </div>
+    </div>
+    
+    
+    <script>
+
+
+        if ($("#lc_type").val()=="permanent") {
+            
+            $("#end_date_container").collapse('hide')
+
+        }
+        if ($("#lc_type").val()=="temporary") {
+            
+            $("#end_date_container").collapse('show')
+
+        }
+
+
+
+
+
+
+        var map_container = []
+
+
+
+
+
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFhemhhc3NhbiIsImEiOiJja2QybmJkOTkxZmQwMnhxeWQ3bTRseTUwIn0.O635_fQIQv7h--atZBrb_g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
+            // style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-111.0937311, 39.3209801], // starting position
+            zoom: 5 // starting zoom
+        });
+
+        map.addControl(new mapboxgl.NavigationControl());
+
+
+        map.on('click', function(e) {
+
+
+            if (map_container.length > 0) {
+           
+                for (let i = 0; i < map_container.length; i++) {
+                    let element = map_container[i];
+                    // console.log(element);
+                    element.remove()
+                    
+                }
+            }
+            // document.getElementById('info').innerHTML =
+            // e.point is the x, y coordinates of the mousemove event relative
+            // to the top-left corner of the map
+            // JSON.stringify(e.point) +
+            // '<br />' +
+            // // e.lngLat is the longitude, latitude geographical position of the event
+            // JSON.stringify(e.lngLat.wrap());
+
+            console.log(e.lngLat);
+            var my_point = e.lngLat;
+            
+            var marker = new mapboxgl.Marker()
+                .setLngLat([my_point.lng, my_point.lat])
+                .addTo(map);
+
+            $("#longitude").val(my_point.lng);
+            $("#latitude").val(my_point.lat);
+
+            map_container.push(marker);
+        });
+
+
+
+
+
+
+
+
+        // custom JS
+
+        function upload_img() {
+            $("#pic").click();
+        }
+
+        function readURL(input) {
+                nameFile = input.files[0].name.split(".");
+                nameFile = nameFile[nameFile.length-1];
+                console.log(nameFile);
+                if(nameFile=="jpg" || nameFile=="jpeg" || nameFile=="png"){
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+            
+                        reader.onload = function (e) {
+                            $('#blah')
+                                .attr('src', e.target.result)
+                                .width('100%')
+                                .height(300);
+                        };
+
+                        reader.readAsDataURL(input.files[0]);
+
+
+                    }
+                }else{
+                    $("#mainDiv").load(location.href + " #mainDiv>*", "");
+                    alert("Invalid file type!");
+                }
+
+
+                
+            }
+
+
+
+        $("#myForm").submit(()=>{
+            if ($("#longitude").val()=="" || $("#latitude").val()=="") {
+                alert("Kindly select the point of location on map!")
+                return false;
+            }else{
+                $("#latlng_error").text("");
+
+                if ($("#lc_type").val()=="") {
+                    $("#type_error").text("Place type is not given!")
+                    return false;
+                }
+
+                if ($("#lc_type").val()=="temporary") {
+                    if ($("#lc_start_date").val()=="" || $("#lc_end_date").val()=="") {
+                        
+                        $("#lc_end_date_error").text("Please select start & end date");
+                        return false;
+
+                    }else{
+
+                        if ($("#lc_start_date").val()==$("#lc_end_date").val()) {
+                            alert("Start date & end date can't be equal")
+                            return false;
+                        }
+
+                    }
+                }
+                
+            }
+
+            
+
+
+        })
+
+
+
+
+    </script>
+</body>
+</html>
