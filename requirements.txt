@@ -17,7 +17,7 @@ decorator==4.4.2
 defusedxml==0.6.0
 diff-match-patch==20181111
 dj-database-url==0.5.0
-Django==3.0.8
+Django==3.0.14
 django-allauth==0.41.0
 django-appconf==1.0.3
 django-bootstrap==0.2.4
