@@ -28,7 +28,7 @@ django-bootstrap3==12.0.3
 django-cacheops==4.2
 django-cors-headers==3.2.1
 django-crispy-forms==1.9.1
-django-debug-toolbar==2.2
+django-debug-toolbar==2.2.1
 django-encrypted-secrets==0.9.8
 django-excel==0.0.10
 django-extensions==2.2.8
