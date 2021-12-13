@@ -79,7 +79,7 @@ junos-eznc==2.5.0
 ldap3==2.7
 libcnml==0.9.5
 lml==0.0.9
-lxml==4.5.1
+lxml==4.6.5
 MarkupPy==1.14
 MarkupSafe==1.1.1
 napalm==3.0.1
