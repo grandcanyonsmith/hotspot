@@ -95,7 +95,7 @@ openpyxl==3.0.4
 openvpn-status==0.2.1
 openwisp-utils==0.4.5
 os-tools==4.48
-paramiko==2.7.1
+paramiko==2.10.1
 passlib==1.7.2
 Pillow==7.1.2
 pprint==0.1
