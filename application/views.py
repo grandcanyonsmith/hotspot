@@ -36,16 +36,12 @@ def place(request, id):
 def show(request):
     context = {}
 
-    if 'type' in request.GET:
-        if request.GET['type']=='temporary':
-            context['all_places'] = place_information.objects.filter(place_type='temporary')
-        elif request.GET['type']=='permanent':
-            context['all_places'] = place_information.objects.filter(place_type='permanent')
-        else:
-            context['all_places'] = place_information.objects.all()
+    if 'type' in request.GET and request.GET['type'] == 'temporary':
+        context['all_places'] = place_information.objects.filter(place_type='temporary')
+    elif 'type' in request.GET and request.GET['type'] == 'permanent':
+        context['all_places'] = place_information.objects.filter(place_type='permanent')
     else:
         context['all_places'] = place_information.objects.all()
-        
     return render(request, 'show.html', context)
 
 
@@ -159,7 +155,7 @@ def signup(request):
 
             user = User.objects.create_user(username=email, first_name=name, password=pass1, last_name=l_name)
             user.save()
-            
+
             return redirect("login")
         else:
             messages.info(request, "Your pasword doesn't match!")
@@ -167,7 +163,7 @@ def signup(request):
             return render(request, "signup.html", context)
 
 
-    
+
     return render(request, "signup.html")
 
 
@@ -175,18 +171,17 @@ def signup(request):
 
 def login(request):
 
-    if request.method == "POST":
-        email = request.POST['email']
-        password = request.POST['password']
-        user = auth.authenticate(username=email, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return redirect("index")
-        else:
-            messages.info(request, "Incorrect login details!")
-            return redirect("login")
-    else:
+    if request.method != "POST":
         return render(request, "login.html")
+    email = request.POST['email']
+    password = request.POST['password']
+    user = auth.authenticate(username=email, password=password)
+    if user is not None:
+        auth.login(request, user)
+        return redirect("index")
+    else:
+        messages.info(request, "Incorrect login details!")
+        return redirect("login")
 
 
 # function for logout
